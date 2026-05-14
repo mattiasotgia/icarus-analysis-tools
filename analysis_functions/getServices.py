@@ -10,5 +10,6 @@ def getServices(services):
     detProperties  = services.ServiceManager('DetectorProperties')
     geometryCore   = services.ServiceManager('Geometry')
     lar_properties = services.ServiceManager('LArProperties')
+    wireGeom       = services.ServiceManager("WireReadout")
 
-    return detClocks,detProperties,geometryCore,lar_properties
+    return detClocks,detProperties,geometryCore,lar_properties,wireGeom

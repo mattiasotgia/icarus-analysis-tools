@@ -1,8 +1,8 @@
 # Note that the analysis functions below need to decode art root data objects so we will need 
 # access to the gallery utilities to access theb
 # All of this assumes you have set up the icarusalg package so you can interface to LArSoft services
-import ROOT
-import galleryUtils
+#import ROOT
+#import galleryUtils
 import numpy as np
 
 # Define a gaussian function
@@ -46,7 +46,7 @@ def getChannelToHitMap(hitCol):
     return channelToHitMap
 
 # Provide a mapping from MC TrackID to associated SimChannel IDEs
-def getTrackToIDEMap(simChannelCol,detClocks,badChannels):
+def getTrackToIDEMap(simChannelCol,detClocks,badChannels=[]):
     trackToIDEMap = {}
 
     for simChannel in simChannelCol:
@@ -97,6 +97,10 @@ def getSpacePointInfo(hitAssns):
 
     # Build up dictionaires between space points and hits, etc. 
     for hitPtr,spacePointPtr in hitAssns:
+        if hitPtr is None or spacePointPtr is None:
+            print("Null pointers for hit assocations")
+            continue
+
         #spacePointDict.setdefault((spacePointPtr.id(),spacePointPtr.key()),[]).append(hitPtr)
         spPtrDict[spacePointPtr.ID()] = spacePointPtr.get()  # There will be no duplicates in the dictionary
         hitPtrList.append(hitPtr.get())                      # Can be duplicates here 
@@ -109,7 +113,7 @@ def getSpacePointInfo(hitAssns):
     
     # Go thgrough again to pick out hits in 2 or 3 hit spacepoints
     for key,hitList in spacePointDict.items():
-        if len(hitList) < 2:   # change this from!= 3:
+        if len(hitList) < 3:   # change this from!= 3:
             continue
             
         for hit in hitList:
@@ -181,7 +185,6 @@ def getTrackToHitMap(trackToIDEMap,channelToHitMap):
                         if hit.LocalIndex() == 0 or len(localHitList) < 1:
                             localHitList.append([hit])
                         else:
-                            print("-- Channel:",channel,", hitIdx:",hitIdx,", dog:",hit.DegreesOfFreedom(),", index:",hit.LocalIndex(),", len(localHitList):",len(localHitList))
                             localHitList[-1].append(hit)
                
                 bestDeltaPeakTime = -10000
